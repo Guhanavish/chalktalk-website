@@ -31,7 +31,7 @@ export default function SiteNav() {
             ['Files', '/download'],
             ['Setup', '/#setup']
           ].map(([label, href]) => (
-            <motion.span key={href} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+            <motion.span key={href} className="navlink" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
               <Link
                 href={href}
                 style={{

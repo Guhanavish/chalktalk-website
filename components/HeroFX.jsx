@@ -31,12 +31,14 @@ export default function HeroFX({ children }) {
   return <div ref={root}>{children}</div>;
 }
 
-/** Split a string into per-char spans for the stagger above. */
+/** Split a string into per-char spans for the stagger below.
+ *  Chars stay visible by default (CSS .hx-char entrance covers no-JS);
+ *  anime.js enhances with a stagger when it runs. */
 export function SplitChars({ text, className = '' }) {
   return (
     <span className={className} aria-label={text}>
       {text.split('').map((ch, i) => (
-        <span key={i} className="hx-char" aria-hidden="true" style={{ display: 'inline-block', opacity: 0 }}>
+        <span key={i} className="hx-char" aria-hidden="true">
           {ch === ' ' ? ' ' : ch}
         </span>
       ))}

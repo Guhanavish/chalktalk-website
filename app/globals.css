@@ -94,6 +94,11 @@ a { color: inherit; }
   background: #e9eff9; border: 1px solid #cfdcf2; border-radius: 999px;
   padding: 6px 14px;
 }
+/* Hero entrance: pure-CSS base (content is always readable, even if the
+   JS animation below never runs), anime.js adds the char stagger on top. */
+.hx-char, .hx-rise { animation: hxIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hx-char { display: inline-block; }
+@keyframes hxIn { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 .muted { color: var(--muted); }
 .small { font-size: 13.5px; }
 table.files { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -109,3 +114,21 @@ table.files tr:last-child td { border-bottom: none; }
   border-radius: 13px; padding: 12px 16px; font-size: 14.5px;
 }
 code.inline { background: #eef2f7; border: 1px solid var(--line); border-radius: 7px; padding: 1px 7px; font-size: 13.5px; }
+
+/* ---------- responsive: phone, tablet, desktop ---------- */
+@media (max-width: 860px) {
+  .navlink { display: none; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 14px; }
+  main .u-btn { width: 100%; justify-content: center; }
+  table.files thead { display: none; }
+  table.files, table.files tbody, table.files tr, table.files td { display: block; width: 100%; }
+  table.files tr { border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; padding: 8px 14px; }
+  table.files td { border: none; padding: 5px 0; }
+  table.files td:last-child { padding: 8px 0 6px; }
+  table.files .u-btn { width: 100%; justify-content: center; }
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+  .wrap { padding: 0 24px; }
+}

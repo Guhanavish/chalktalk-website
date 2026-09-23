@@ -18,7 +18,7 @@ export default async function Home() {
     <HeroFX>
       <div className="wrap">
         {/* HERO */}
-        <section style={{ textAlign: 'center', padding: '72px 0 40px', position: 'relative' }}>
+        <section style={{ textAlign: 'center', padding: '72px 0 40px', position: 'relative', overflow: 'clip' }}>
           <span className="hx-blob" style={{ position: 'absolute', width: 280, height: 280, left: '-60px', top: 0, borderRadius: '50%', background: 'radial-gradient(circle, #dbe7ff, transparent 70%)' }} />
           <span className="hx-blob" style={{ position: 'absolute', width: 300, height: 300, right: '-70px', top: 60, borderRadius: '50%', background: 'radial-gradient(circle, #fdf0c2, transparent 70%)' }} />
           <div className="hx-rise"><span className="badge">Made for smart classrooms</span></div>
