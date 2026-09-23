@@ -14,7 +14,10 @@ export default function HeroFX({ children }) {
     const cards = el.querySelectorAll('.hx-rise');
     const blobs = el.querySelectorAll('.hx-blob');
     const tl = createTimeline({ defaults: { ease: 'outExpo' } });
-    tl.add(chars, { opacity: [0, 1], y: [26, 0], delay: stagger(28), duration: 650 });
+    // opacity ONLY on the letters: transforms on children of
+    // background-clip:text poison the paint in Chrome, so never put them
+    // on headline text (leftover identity transforms hide it for good)
+    tl.add(chars, { opacity: [0, 1], delay: stagger(28), duration: 650 });
     tl.add(cards, { opacity: [0, 1], y: [30, 0], delay: stagger(110), duration: 700 }, '-=400');
     const floaters = blobs.length
       ? animate(blobs, {

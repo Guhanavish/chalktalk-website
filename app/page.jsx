@@ -24,7 +24,7 @@ export default async function Home() {
           <div className="hx-rise"><span className="badge">Made for smart classrooms</span></div>
           <h1 className="hx-rise" style={{ fontSize: 'clamp(38px, 6vw, 64px)', lineHeight: 1.08, margin: '18px 0 10px', color: 'var(--navy)' }}>
             <SplitChars text="Teach on an" /> <br />
-            <span className="shimmer"><SplitChars text="infinite board." /></span>
+            <SplitChars text="infinite board." />
           </h1>
           <p className="hx-rise muted" style={{ fontSize: 19, maxWidth: 640, margin: '0 auto 26px', lineHeight: 1.6 }}>
             ChalkTalk turns any touch panel or old laptop into a classroom board —
