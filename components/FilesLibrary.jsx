@@ -10,12 +10,49 @@ const TABS = [['all', 'All'], ['notes', 'Notes'], ['pdf', 'PDF'], ['ppt', 'PPT']
 export default function FilesLibrary({ files }) {
   const [tab, setTab] = useState('all');
   const [q, setQ] = useState('');
+  const [items, setItems] = useState(files || []);
+  const [pending, setPending] = useState(null); // file row awaiting delete confirm
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [authError, setAuthError] = useState('');
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return (files || []).filter((f) =>
+    return (items || []).filter((f) =>
       (tab === 'all' || f.kind === tab) &&
       (!needle || (f.name || '').toLowerCase().includes(needle)));
-  }, [files, tab, q]);
+  }, [items, tab, q]);
+
+  function askDelete(f) {
+    setPending(f);
+    setUsername('');
+    setPassword('');
+    setAuthError('');
+  }
+
+  async function confirmDelete() {
+    if (!pending || busy) return;
+    setBusy(true);
+    setAuthError('');
+    try {
+      const res = await fetch('/api/files/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pending.id, username, password })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAuthError(data.error || 'Delete failed.');
+        return;
+      }
+      setItems((prev) => prev.filter((f) => f.id !== pending.id));
+      setPending(null);
+    } catch {
+      setAuthError('Network error — try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="u-card" style={{ padding: 22 }}>
@@ -82,6 +119,16 @@ export default function FilesLibrary({ files }) {
                           Download
                         </motion.a>
                       ) : <span className="muted small">unavailable</span>}
+                      <button
+                        onClick={() => askDelete(f)}
+                        className="u-btn"
+                        style={{
+                          padding: '8px 16px', fontSize: 14, marginLeft: 8, cursor: 'pointer',
+                          background: 'transparent', border: '1px solid var(--line)', color: 'var(--muted)'
+                        }}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </motion.tr>
                 ))}
@@ -90,6 +137,54 @@ export default function FilesLibrary({ files }) {
           </table>
         </div>
       )}
+      <AnimatePresence>
+        {pending && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 60, display: 'flex',
+              alignItems: 'center', justifyContent: 'center', background: 'rgba(15,23,42,0.45)', padding: 16
+            }}
+            onClick={() => !busy && setPending(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.94, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 16, padding: 24, width: '100%', maxWidth: 380 }}
+            >
+              <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>Delete this file?</h3>
+              <p className="muted" style={{ margin: '0 0 16px', fontSize: 14 }}>
+                {(pending && pending.name) || ''} will be removed for everyone. Enter the teacher login (same as app upload).
+              </p>
+              <input
+                value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username"
+                autoComplete="username"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: 11, border: '1px solid var(--line)', fontSize: 14, marginBottom: 10, outline: 'none' }}
+              />
+              <input
+                value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password"
+                autoComplete="current-password" onKeyDown={(e) => { if (e.key === 'Enter') confirmDelete(); }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: 11, border: '1px solid var(--line)', fontSize: 14, outline: 'none' }}
+              />
+              {authError && <p style={{ color: '#dc2626', fontSize: 13, margin: '10px 0 0' }}>{authError}</p>}
+              <div style={{ display: 'flex', gap: 10, marginTop: 18, justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => !busy && setPending(null)}
+                  className="u-btn" style={{ background: 'transparent', border: '1px solid var(--line)', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete} disabled={busy}
+                  className="u-btn" style={{ background: '#dc2626', color: '#fff', border: 'none', cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.7 : 1 }}
+                >
+                  {busy ? 'Deleting…' : 'Delete'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
